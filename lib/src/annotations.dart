@@ -1,6 +1,6 @@
 part of jaguar_validate.src;
 
-abstract class Validated {
+abstract class Validatable {
   Future<Null> validate();
 }
 

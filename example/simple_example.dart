@@ -3,7 +3,7 @@
 
 import 'package:jaguar_validate/jaguar_validate.dart';
 
-class User implements Validated {
+class User implements Validatable {
   User.make(this.name, this.email, this.quote, this.age);
 
   @HasLengthInRange(1, 10)

@@ -4,8 +4,20 @@ abstract class Validatable {
   Future<Null> validate();
 }
 
-class ValidateValidatable {
+class ValidateValidatable implements FieldValidator<Validatable> {
   const ValidateValidatable();
+
+  Future<List<ValidationError>> validate(String field, Validatable param) async {
+    List<ValidationError> errors = [];
+
+    try {
+      await param.validate();
+    } on ValidationErrors catch(e) {
+      //TODO merge
+    }
+
+    return errors;
+  }
 }
 
 class ValidIf<FieldType> implements FieldValidator<FieldType> {

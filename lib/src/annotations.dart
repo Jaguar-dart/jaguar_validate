@@ -1,19 +1,23 @@
 part of jaguar_validate.src;
 
 abstract class Validatable {
+  /// Validates the model
+  ///
+  /// Must throw [ObjectValidationErrors] when validation fails
   Future<Null> validate();
 }
 
 class ValidateValidatable implements FieldValidator<Validatable> {
   const ValidateValidatable();
 
-  Future<List<ValidationError>> validate(String field, Validatable param) async {
-    List<ValidationError> errors = [];
+  Future<ValidationErrors> validate(String field, Validatable param) async {
+    ObjectValidationErrors errors = new ObjectValidationErrors(field);
 
     try {
       await param.validate();
-    } on ValidationErrors catch(e) {
-      //TODO merge
+    } on ObjectValidationErrors catch (e) {
+      errors = e;
+      errors.field = field;
     }
 
     return errors;
@@ -25,7 +29,8 @@ class ValidIf<FieldType> implements FieldValidator<FieldType> {
 
   ValidIf(this.validator);
 
-  Future<List<ValidationError>> validate(String field, FieldType param) async {
+  Future<PropertyValidationErrors> validate(
+      String field, FieldType param) async {
     return validator(param);
   }
 }
@@ -33,12 +38,12 @@ class ValidIf<FieldType> implements FieldValidator<FieldType> {
 class IsNotNull implements FieldValidator<Object> {
   const IsNotNull();
 
-  Future<List<ValidationError>> validate(String field, Object param) async {
-    if(param == null) {
-      return [new ValidationError('$field cannot be null!')];
+  Future<PropertyValidationErrors> validate(String field, Object param) async {
+    if (param == null) {
+      return _mkPEr(field, '$field cannot be null!');
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
@@ -47,32 +52,33 @@ class IsEqual<FieldType> implements FieldValidator<FieldType> {
 
   const IsEqual(this.to);
 
-  Future<List<ValidationError>> validate(String field, FieldType param) async {
-    if(param is! FieldType) {
-      return [new ValidationError('$field must be of type $FieldType!')];
+  Future<PropertyValidationErrors> validate(
+      String field, FieldType param) async {
+    if (param is! FieldType) {
+      return _mkPEr(field, '$field must be of type $FieldType!');
     }
 
-    if(param != to) {
-      return [new ValidationError('$field is not equal to $to!')];
+    if (param != to) {
+      return _mkPEr(field, '$field is not equal to $to!');
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
 class IsNotEmpty implements FieldValidator {
   const IsNotEmpty();
 
-  Future<List<ValidationError>> validate(String field, dynamic param) async {
-    if(param is String || param is List || param is Map || param is Set) {
-      if(param.isEmpty) {
-        return _mkErL('$field must not be empty!');
+  Future<PropertyValidationErrors> validate(String field, dynamic param) async {
+    if (param is String || param is List || param is Map || param is Set) {
+      if (param.isEmpty) {
+        return _mkPEr(field, '$field must not be empty!');
       }
     } else {
-      return _mkErL('$field must not be empty!');
+      return _mkPEr(field, '$field must not be empty!');
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
@@ -81,16 +87,16 @@ class HasLength implements FieldValidator {
 
   const HasLength(this.length);
 
-  Future<List<ValidationError>> validate(String field, dynamic param) async {
-    if(param is String || param is List || param is Map || param is Set) {
-      if(param.length != length) {
-        return _mkErL('$field must have length $length!');
+  Future<PropertyValidationErrors> validate(String field, dynamic param) async {
+    if (param is String || param is List || param is Map || param is Set) {
+      if (param.length != length) {
+        return _mkPEr(field, '$field must have length $length!');
       }
     } else {
-      return _mkErL('$field must have length $length!');
+      return _mkPEr(field, '$field must have length $length!');
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
@@ -99,16 +105,16 @@ class HasLengthLessThan implements FieldValidator {
 
   const HasLengthLessThan(this.length);
 
-  Future<List<ValidationError>> validate(String field, dynamic param) async {
-    if(param is String || param is List || param is Map || param is Set) {
-      if(param.length >= length) {
-        return _mkErL('$field must have length less than $length!');
+  Future<PropertyValidationErrors> validate(String field, dynamic param) async {
+    if (param is String || param is List || param is Map || param is Set) {
+      if (param.length >= length) {
+        return _mkPEr(field, '$field must have length less than $length!');
       }
     } else {
-      return _mkErL('$field must have length less than $length!');
+      return _mkPEr(field, '$field must have length less than $length!');
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
@@ -117,16 +123,16 @@ class HasLengthGreaterThan implements FieldValidator {
 
   const HasLengthGreaterThan(this.length);
 
-  Future<List<ValidationError>> validate(String field, dynamic param) async {
-    if(param is String || param is List || param is Map || param is Set) {
-      if(param.length <= length) {
-        return _mkErL('$field must have length greater than $length!');
+  Future<PropertyValidationErrors> validate(String field, dynamic param) async {
+    if (param is String || param is List || param is Map || param is Set) {
+      if (param.length <= length) {
+        return _mkPEr(field, '$field must have length greater than $length!');
       }
     } else {
-      return _mkErL('$field must have length greater than $length!');
+      return _mkPEr(field, '$field must have length greater than $length!');
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
@@ -139,24 +145,24 @@ class HasLengthInRange implements FieldValidator {
 
   const HasLengthInRange(this.min, this.max, {this.whenNotNull: false});
 
-  Future<List<ValidationError>> validate(String field, dynamic param) async {
-    if(param is String || param is List || param is Map || param is Set) {
-      if(param.length < min) {
-        return _mkErL('$field must have length greater than $min!');
+  Future<PropertyValidationErrors> validate(String field, dynamic param) async {
+    if (param is String || param is List || param is Map || param is Set) {
+      if (param.length < min) {
+        return _mkPEr(field, '$field must have length greater than $min!');
       }
 
-      if(param.length > max) {
-        return _mkErL('$field must have length less than $max!');
+      if (param.length > max) {
+        return _mkPEr(field, '$field must have length less than $max!');
       }
     } else {
-      if(param == null && whenNotNull) {
+      if (param == null && whenNotNull) {
         //Throw no error if whenNotNull is true
       } else {
-        return _mkErL('$field must be in range [$min, $max]!');
+        return _mkPEr(field, '$field must be in range [$min, $max]!');
       }
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
@@ -165,16 +171,16 @@ class IsGreaterThan implements FieldValidator {
 
   const IsGreaterThan(this.value);
 
-  Future<List<ValidationError>> validate(String field, dynamic param) async {
-    if(param is int || param is double || param is num) {
-      if(param <= value) {
-        return _mkErL('$field must be greater than $value!');
+  Future<PropertyValidationErrors> validate(String field, dynamic param) async {
+    if (param is int || param is double || param is num) {
+      if (param <= value) {
+        return _mkPEr(field, '$field must be greater than $value!');
       }
     } else {
-      return _mkErL('$field must be greater than $value!');
+      return _mkPEr(field, '$field must be greater than $value!');
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
@@ -183,16 +189,16 @@ class IsLessThan implements FieldValidator {
 
   const IsLessThan(this.value);
 
-  Future<List<ValidationError>> validate(String field, dynamic param) async {
-    if(param is int || param is double || param is num) {
-      if(param >= value) {
-        return _mkErL('$field must be less than $value!');
+  Future<PropertyValidationErrors> validate(String field, dynamic param) async {
+    if (param is int || param is double || param is num) {
+      if (param >= value) {
+        return _mkPEr(field, '$field must be less than $value!');
       }
     } else {
-      return _mkErL('$field must be less than $value!');
+      return _mkPEr(field, '$field must be less than $value!');
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
 
@@ -205,33 +211,32 @@ class IsInRange implements FieldValidator {
 
   const IsInRange(this.min, this.max, {this.whenNotNull: false});
 
-  Future<List<ValidationError>> validate(String field, dynamic param) async {
-    if(param is int || param is double || param is num) {
-      if(param < min) {
-        return _mkErL('$field must be greater than $min!');
+  Future<PropertyValidationErrors> validate(String field, dynamic param) async {
+    if (param is int || param is double || param is num) {
+      if (param < min) {
+        return _mkPEr(field, '$field must be greater than $min!');
       }
-      if(param > max) {
-        return _mkErL('$field must be less than $max!');
+      if (param > max) {
+        return _mkPEr(field, '$field must be less than $max!');
       }
     } else {
-      if(param == null && whenNotNull) {
+      if (param == null && whenNotNull) {
         //Throw no error if whenNotNull is true
       } else {
-        return _mkErL('$field must be in range [$min, $max]!');
+        return _mkPEr(field, '$field must be in range [$min, $max]!');
       }
     }
 
-    return [];
+    return _mkPErL(field, []);
   }
 }
-
 
 class IsEmail implements FieldValidator<String> {
   const IsEmail();
 
-  Future<List<ValidationError>> validate(String field, String param) async {
+  Future<PropertyValidationErrors> validate(String field, String param) async {
     //TODO
 
-    return [];
+    return _mkPErL(field, []);
   }
 }

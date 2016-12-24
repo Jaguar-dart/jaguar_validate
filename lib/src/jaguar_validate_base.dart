@@ -8,6 +8,10 @@ import 'dart:convert';
 
 part 'annotations.dart';
 
+class GenValidator {
+  const GenValidator();
+}
+
 class ValidationError {
   final String msg;
 
@@ -16,39 +20,131 @@ class ValidationError {
   String toString() => msg;
 }
 
-ValidationError _mkEr(String msg) => new ValidationError(msg);
+class ValidationBug {
+  final String msg;
 
-List<ValidationError> _mkErL(String msg) => [new ValidationError(msg)];
+  ValidationBug(this.msg);
 
-class ValidationErrors {
-  final Map<String, List<ValidationError>> _errors = {};
+  String toString() => msg;
+}
 
-  Map<String, List<ValidationError>> get errors => _errors;
+PropertyValidationErrors _mkPEr(String field, String msg) =>
+    new PropertyValidationErrors(field)..add(new ValidationError(msg));
 
-  void addError(String field, ValidationError error) {
-    List<ValidationError> errorsList = _errors[field];
+PropertyValidationErrors _mkPErL(String field, List<String> msges) {
+  PropertyValidationErrors ret = new PropertyValidationErrors(field);
+  msges.forEach((String msg) => ret.add(new ValidationError(msg)));
+  return ret;
+}
 
-    if(errorsList == null) {
-      errorsList = [];
+abstract class ValidationErrors {}
+
+class PropertyValidationErrors implements ValidationErrors {
+  final String field;
+
+  final List<ValidationError> _errors = [];
+
+  PropertyValidationErrors(this.field);
+
+  List<ValidationError> get errors => _errors.toList();
+
+  bool get hasErrors => _errors.length != 0;
+
+  void add(ValidationError error) {
+    _errors.add(error);
+  }
+
+  List<String> toList() =>
+      _errors.map((ValidationError v) => v.toString()).toList();
+}
+
+class ObjectValidationErrors implements ValidationErrors {
+  String _field;
+
+  final Map<String, ValidationErrors> _errors = {};
+
+  ObjectValidationErrors(String field) {
+    this.field = field;
+  }
+
+  Map<String, ValidationErrors> get errors => _errors;
+
+  set field(String field) => _field = field;
+
+  String get field => _field;
+
+  bool get hasErrors => _errors.length != 0;
+
+  ObjectValidationErrors addPErr(String field, ValidationError error) {
+    ValidationErrors errorsList = _errors[field];
+
+    if (errorsList == null) {
+      errorsList = new PropertyValidationErrors(field);
       _errors[field] = errorsList;
+    } else if (errorsList is PropertyValidationErrors) {
+      errorsList.add(error);
+    } else {
+      throw new ValidationBug('Not a property error container!');
     }
 
-    errorsList.add(error);
+    return this;
+  }
+
+  ObjectValidationErrors mergePErr(PropertyValidationErrors err) {
+    err._errors.forEach((ValidationError v) => addPErr(field, v));
+
+    return this;
+  }
+
+  ObjectValidationErrors addOErr(ObjectValidationErrors error) {
+    if (!error.hasErrors) {
+      return this;
+    }
+
+    ValidationErrors err = _errors[error.field];
+
+    if (err == null) {
+      _errors[error.field] = error;
+    } else if (err is ObjectValidationErrors) {
+      err.mergeObjectError(error);
+    } else {
+      throw new ValidationBug('Not a Object error container!');
+    }
+
+    return this;
+  }
+
+  ObjectValidationErrors mergeObjectError(ObjectValidationErrors error) {
+    for (String field in error._errors.keys) {
+      ValidationErrors err = error._errors[field];
+
+      if (err is PropertyValidationErrors) {
+        mergePErr(err);
+      } else if (err is ObjectValidationErrors) {
+        addOErr(err);
+      } else {
+        throw new ValidationBug('Unknown error container!');
+      }
+    }
+
+    return this;
   }
 
   bool fieldHasError(String field) => _errors.containsKey(field);
 
   Map toMap() {
-    final Map<String, List<String>> map = {};
+    final Map<String, dynamic> map = {};
 
-    for(String field in map.keys) {
-      List<String> errors = [];
+    for (String field in map.keys) {
+      ValidationErrors v = _errors[field];
 
-      for(ValidationError v in _errors[field]) {
-        errors.add(v.msg);
+      if (v is PropertyValidationErrors) {
+        map[field] = v.toList();
+      } else if (v is ObjectValidationErrors) {
+        map[field] = v.toMap();
+      } else {
+        throw new ValidationBug('Unknown error container!');
       }
-
-      map[field] = errors;
     }
 
     return map;
@@ -57,9 +153,9 @@ class ValidationErrors {
   String toString() => JSON.encode(toMap());
 }
 
-typedef List<ValidationError> ValidatorFunc<FieldType>(FieldType param);
+typedef Future<PropertyValidationErrors> ValidatorFunc<FieldType>(
+    FieldType param);
 
 abstract class FieldValidator<FieldType> {
-  Future<List<ValidationError>> validate(String field, FieldType param);
+  Future<PropertyValidationErrors> validate(String field, FieldType param);
 }
-

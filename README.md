@@ -1,19 +1,37 @@
 # jaguar_validate
 
-A library for Dart developers. It is awesome.
+A simple, source generated Validator framework
 
 ## Usage
 
 A simple usage example:
 
-    import 'package:jaguar_validate/jaguar_validate.dart';
+```dart
+import 'package:jaguar_validate/jaguar_validate.dart';
 
-    main() {
-      var awesome = new Awesome();
-    }
+class User implements Validated {
+  User.make(this.name, this.email, this.quote, this.age);
 
-## Features and bugs
+  @HasLengthInRange(1, 10)
+  String name;
 
-Please file feature requests and bugs at the [issue tracker][tracker].
+  @IsEmail()
+  String email;
 
-[tracker]: http://example.com/issues/replaceme
+  @HasLengthInRange(15, 75)
+  String quote;
+
+  @IsInRange(20, 30)
+  int age;
+}
+
+main() async {
+  try {
+    User user = new User.make(
+        'teja', 'tejainece@gmail.com', 'Jaguar cofounder', 27);
+    await user.validate();
+  } on ValidationErrors catch(e) {
+    print(e);
+  }
+}
+```

@@ -1,5 +1,13 @@
 part of jaguar_validate.src;
 
+abstract class Validated {
+  Future<Null> validate();
+}
+
+class ValidateValidatable {
+  const ValidateValidatable();
+}
+
 class ValidIf<FieldType> implements FieldValidator<FieldType> {
   final ValidatorFunc<FieldType> validator;
 

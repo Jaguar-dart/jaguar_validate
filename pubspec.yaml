@@ -1,5 +1,5 @@
 name: jaguar_validate
-description: A starting point for Dart libraries or applications.
+description: A simple, source generated Validator framework
 version: 0.0.1
 authors:
 - Ravi Teja Gudapati <tejainece@gmail.com>

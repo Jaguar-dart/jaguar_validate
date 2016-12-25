@@ -1,13 +1,13 @@
 name: jaguar_validate
 description: A simple, source generated Validator framework
-version: 0.0.1
+version: 0.0.2
 authors:
 - Ravi Teja Gudapati <tejainece@gmail.com>
 - Kevin Segaud <segaud.kevin@gmail.com>
 homepage: http://jaguar-dart.github.io
 
 environment:
-  sdk: '>=1.0.0 <2.0.0'
+  sdk: ">=1.8.0 <2.0.0"
 
 dependencies:
   source_gen: "^0.5.1"
@@ -17,7 +17,7 @@ dependencies:
   source_gen_help:
     git:
       url: https://github.com/Jaguar-dart/source_gen_help.git
-      ref: d5d427e
+      ref: 4acd8b6
 
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'

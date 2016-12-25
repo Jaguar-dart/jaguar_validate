@@ -8,15 +8,15 @@ class IsAlphaNumeric implements FieldValidator<String> {
   const IsAlphaNumeric({this.whenNotNull: false});
 
   Future<PropertyValidationErrors> validate(String field, String param) async {
-    if(param == null) {
-      if(whenNotNull) {
+    if (param == null) {
+      if (whenNotNull) {
         return _mkPErL(field, []);
       } else {
         return _mkPEr(field, '$field cannot be null!');
       }
     }
 
-    if(!_alphanumeric.hasMatch(param.toLowerCase())) {
+    if (!_alphanumeric.hasMatch(param.toLowerCase())) {
       return _mkPEr(field, '$field is not alphanumeric!');
     }
 

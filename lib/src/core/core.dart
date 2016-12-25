@@ -3,7 +3,6 @@
 
 library jaguar_validate.src.core;
 
-
 import 'dart:async';
 import 'dart:convert';
 

@@ -8,8 +8,8 @@ class ValidateValidatable implements FieldValidator<Validatable> {
   Future<ValidationErrors> validate(String field, Validatable param) async {
     ObjectValidationErrors errors = new ObjectValidationErrors(field);
 
-    if(param == null) {
-      if(whenNotNull) {
+    if (param == null) {
+      if (whenNotNull) {
         return errors;
       } else {
         errors.addPErr('this', new ValidationError('$field cannot be null!'));

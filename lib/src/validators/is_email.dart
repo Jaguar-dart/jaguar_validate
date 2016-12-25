@@ -9,15 +9,15 @@ class IsEmail implements FieldValidator<String> {
   const IsEmail({this.whenNotNull: false});
 
   Future<PropertyValidationErrors> validate(String field, String param) async {
-    if(param == null) {
-      if(whenNotNull) {
+    if (param == null) {
+      if (whenNotNull) {
         return _mkPErL(field, []);
       } else {
         return _mkPEr(field, '$field cannot be null!');
       }
     }
 
-    if(!_email.hasMatch(param.toLowerCase())) {
+    if (!_email.hasMatch(param.toLowerCase())) {
       return _mkPEr(field, '$field is not an email!');
     }
 

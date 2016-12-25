@@ -1,10 +1,15 @@
 // Copyright (c) 2016, teja. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
+library jaguar_validate.example.simple;
+
 import 'dart:async';
 import 'package:jaguar_validate/jaguar_validate.dart';
 
-class Author implements Validatable {
+part 'simple_example.g.dart';
+
+@GenValidator()
+class Author extends _Author {
   @HasLenInRange(1, 10)
   String name;
 
@@ -15,23 +20,10 @@ class Author implements Validatable {
   int age;
 
   Author.make(this.name, this.email, this.age);
-
-  Future<Null> validate() async {
-    ObjectValidator v = new ObjectValidator();
-
-    v.f(new HasLenInRange(1, 10), 'name', name);
-    v.f(new IsEmail(), 'email', email);
-    v.f(new IsInRange(20, 30), 'age', age);
-
-    ObjectValidationErrors err = await v.validate();
-
-    if (err.hasErrors) {
-      throw err;
-    }
-  }
 }
 
-class Book implements Validatable {
+@GenValidator()
+class Book extends _Book {
   Book.make(this.name, this.author, this.abstract, this.pages, this.price);
 
   @HasLenInRange(1, 25)
@@ -48,22 +40,6 @@ class Book implements Validatable {
 
   @IsInRange(1, 200)
   int price;
-
-  Future<Null> validate() async {
-    ObjectValidator v = new ObjectValidator();
-
-    v.f(new HasLenInRange(1, 25), 'name', name);
-    v.f(new ValidateValidatable(), 'author', author);
-    v.f(new HasLenInRange(15, 1000), 'abstract', abstract);
-    v.f(new IsGreaterThan(0), 'pages', pages);
-    v.f(new IsInRange(1, 200), 'price', price);
-
-    ObjectValidationErrors err = await v.validate();
-
-    if (err.hasErrors) {
-      throw err;
-    }
-  }
 }
 
 main() async {

@@ -21,13 +21,14 @@ part 'not_null.dart';
 part 'valid_if.dart';
 part 'validate_validatable.dart';
 
-RegExp _creditCard = new RegExp(r'^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$');
+RegExp _creditCard = new RegExp(
+    r'^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$');
 
 RegExp _int = new RegExp(r'^(?:-?(?:0|[1-9][0-9]*))$');
-RegExp _float = new RegExp(r'^(?:-?(?:[0-9]+))?(?:\.[0-9]*)?(?:[eE][\+\-]?(?:[0-9]+))?$');
+RegExp _float =
+    new RegExp(r'^(?:-?(?:[0-9]+))?(?:\.[0-9]*)?(?:[eE][\+\-]?(?:[0-9]+))?$');
 RegExp _hexadecimal = new RegExp(r'^[0-9a-fA-F]+$');
 RegExp _hexcolor = new RegExp(r'^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');
-
 
 PropertyValidationErrors _mkPEr(String field, String msg) =>
     new PropertyValidationErrors(field)..add(new ValidationError(msg));

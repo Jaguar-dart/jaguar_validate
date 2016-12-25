@@ -5,42 +5,42 @@ import 'dart:async';
 import 'package:jaguar_validate/jaguar_validate.dart';
 
 class Author implements Validatable {
-  @HasLengthInRange(1, 10)
+  @HasLenInRange(1, 10)
   String name;
 
   @IsEmail()
   String email;
 
-  @HasLengthInRange(15, 75)
-  String quote;
-
   @IsInRange(20, 30)
   int age;
 
-  Future<Null> validate() async {
-    ObjectValidationErrors ret = new ObjectValidationErrors(null);
-    ret
-        .mergePErr(await new HasLengthInRange(1, 10).validate('name', name))
-        .mergePErr(await new IsEmail().validate('email', email))
-        .mergePErr(await new HasLengthInRange(15, 75).validate('quote', quote))
-        .mergePErr(await new IsInRange(20, 30).validate('age', age));
+  Author.make(this.name, this.email, this.age);
 
-    if (ret.hasErrors) {
-      throw ret;
+  Future<Null> validate() async {
+    ObjectValidator v = new ObjectValidator();
+
+    v.f(new HasLenInRange(1, 10), 'name', name);
+    v.f(new IsEmail(), 'email', email);
+    v.f(new IsInRange(20, 30), 'age', age);
+
+    ObjectValidationErrors err = await v.validate();
+
+    if (err.hasErrors) {
+      throw err;
     }
   }
 }
 
 class Book implements Validatable {
-  Book.make(this.name, this.author);
+  Book.make(this.name, this.author, this.abstract, this.pages, this.price);
 
-  @HasLengthInRange(1, 10)
+  @HasLenInRange(1, 25)
   String name;
 
   @ValidateValidatable()
   Author author;
 
-  @HasLengthInRange(15, 75)
+  @HasLenInRange(15, 1000)
   String abstract;
 
   @IsGreaterThan(0)
@@ -50,26 +50,33 @@ class Book implements Validatable {
   int price;
 
   Future<Null> validate() async {
-    ObjectValidationErrors ret = new ObjectValidationErrors(null);
+    ObjectValidator v = new ObjectValidator();
 
-    ret.mergePErr(await new HasLengthInRange(1, 10).validate('name', name));
-    ret.addOErr(await new ValidateValidatable().validate('author', author));
-    ret.mergePErr(
-        await new HasLengthInRange(15, 75).validate('abstract', abstract));
-    ret.mergePErr(await new IsGreaterThan(0).validate('pages', pages));
-    ret.mergePErr(await new IsInRange(1, 200).validate('price', price));
+    v.f(new HasLenInRange(1, 25), 'name', name);
+    v.f(new ValidateValidatable(), 'author', author);
+    v.f(new HasLenInRange(15, 1000), 'abstract', abstract);
+    v.f(new IsGreaterThan(0), 'pages', pages);
+    v.f(new IsInRange(1, 200), 'price', price);
 
-    if (ret.hasErrors) {
-      throw ret;
+    ObjectValidationErrors err = await v.validate();
+
+    if (err.hasErrors) {
+      throw err;
     }
   }
 }
 
 main() async {
   try {
-    Book book = new Book.make('Fantastic beasts', null);
+    String abstract = """
+    Whatever is abstract. Whatever maybe. Whatever could be an abstract.
+    Scientific papers are usually dumb page fillers.
+    """;
+    Author author = new Author.make('Mark', 'mark@books.com', 25);
+    Book book = new Book.make('Fantastic beasts', author, abstract, 100, 100);
     await book.validate();
   } on ValidationErrors catch (e) {
+    print('here');
     print(e);
   }
 }

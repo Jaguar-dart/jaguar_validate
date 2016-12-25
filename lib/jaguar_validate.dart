@@ -6,6 +6,5 @@
 /// More dartdocs go here.
 library jaguar_validate;
 
-export 'src/jaguar_validate_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/core/core.dart';
+export 'src/validators/validators.dart';

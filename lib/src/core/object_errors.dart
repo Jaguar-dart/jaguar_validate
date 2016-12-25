@@ -1,62 +1,4 @@
-// Copyright (c) 2016, teja. All rights reserved. Use of this source code
-// is governed by a BSD-style license that can be found in the LICENSE file.
-
-library jaguar_validate.src;
-
-import 'dart:async';
-import 'dart:convert';
-
-part 'annotations.dart';
-
-class GenValidator {
-  const GenValidator();
-}
-
-class ValidationError {
-  final String msg;
-
-  ValidationError(this.msg);
-
-  String toString() => msg;
-}
-
-class ValidationBug {
-  final String msg;
-
-  ValidationBug(this.msg);
-
-  String toString() => msg;
-}
-
-PropertyValidationErrors _mkPEr(String field, String msg) =>
-    new PropertyValidationErrors(field)..add(new ValidationError(msg));
-
-PropertyValidationErrors _mkPErL(String field, List<String> msges) {
-  PropertyValidationErrors ret = new PropertyValidationErrors(field);
-  msges.forEach((String msg) => ret.add(new ValidationError(msg)));
-  return ret;
-}
-
-abstract class ValidationErrors {}
-
-class PropertyValidationErrors implements ValidationErrors {
-  final String field;
-
-  final List<ValidationError> _errors = [];
-
-  PropertyValidationErrors(this.field);
-
-  List<ValidationError> get errors => _errors.toList();
-
-  bool get hasErrors => _errors.length != 0;
-
-  void add(ValidationError error) {
-    _errors.add(error);
-  }
-
-  List<String> toList() =>
-      _errors.map((ValidationError v) => v.toString()).toList();
-}
+part of jaguar_validate.src.core;
 
 class ObjectValidationErrors implements ValidationErrors {
   String _field;
@@ -81,17 +23,17 @@ class ObjectValidationErrors implements ValidationErrors {
     if (errorsList == null) {
       errorsList = new PropertyValidationErrors(field);
       _errors[field] = errorsList;
-    } else if (errorsList is PropertyValidationErrors) {
-      errorsList.add(error);
-    } else {
+    } else if (errorsList is! PropertyValidationErrors) {
       throw new ValidationBug('Not a property error container!');
     }
+
+    (errorsList as PropertyValidationErrors).add(error);
 
     return this;
   }
 
   ObjectValidationErrors mergePErr(PropertyValidationErrors err) {
-    err._errors.forEach((ValidationError v) => addPErr(field, v));
+    err._errors.forEach((ValidationError v) => addPErr(err.field, v));
 
     return this;
   }
@@ -106,7 +48,7 @@ class ObjectValidationErrors implements ValidationErrors {
     if (err == null) {
       _errors[error.field] = error;
     } else if (err is ObjectValidationErrors) {
-      err.mergeObjectError(error);
+      err.mergeOErr(error);
     } else {
       throw new ValidationBug('Not a Object error container!');
     }
@@ -114,7 +56,7 @@ class ObjectValidationErrors implements ValidationErrors {
     return this;
   }
 
-  ObjectValidationErrors mergeObjectError(ObjectValidationErrors error) {
+  ObjectValidationErrors mergeOErr(ObjectValidationErrors error) {
     for (String field in error._errors.keys) {
       ValidationErrors err = error._errors[field];
 
@@ -135,7 +77,7 @@ class ObjectValidationErrors implements ValidationErrors {
   Map toMap() {
     final Map<String, dynamic> map = {};
 
-    for (String field in map.keys) {
+    for (String field in _errors.keys) {
       ValidationErrors v = _errors[field];
 
       if (v is PropertyValidationErrors) {
@@ -151,11 +93,4 @@ class ObjectValidationErrors implements ValidationErrors {
   }
 
   String toString() => JSON.encode(toMap());
-}
-
-typedef Future<PropertyValidationErrors> ValidatorFunc<FieldType>(
-    FieldType param);
-
-abstract class FieldValidator<FieldType> {
-  Future<PropertyValidationErrors> validate(String field, FieldType param);
 }

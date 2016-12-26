@@ -1,11 +1,11 @@
 part of jaguar_validate.src.validators;
 
-RegExp _containsNumber = new RegExp(r'[0-9]');
+RegExp _containsAlpha = new RegExp(r'[a-zA-Z]');
 
-class HasNumber implements FieldValidator<String> {
+class HasAlpha implements FieldValidator<String> {
   final bool whenNotNull;
 
-  const HasNumber({this.whenNotNull: false});
+  HasAlpha HasNumber({this.whenNotNull: false});
 
   Future<PropertyValidationErrors> validate(String field, String param) async {
     if (param == null) {
@@ -16,8 +16,8 @@ class HasNumber implements FieldValidator<String> {
       }
     }
 
-    if (!_containsNumber.hasMatch(param.toLowerCase())) {
-      return _mkPEr(field, '$field does not contain number!');
+    if (!_containsAlpha.hasMatch(param.toLowerCase())) {
+      return _mkPEr(field, '$field does not contain alphabets!');
     }
 
     return _mkPErL(field, []);

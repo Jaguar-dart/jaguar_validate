@@ -11,7 +11,6 @@ const NamedElement kTypeFieldValidator =
 
 bool isValidator(AnnotationElementWrap annot) {
   ClassElementWrap w = annot.ancestorClazz;
-  print(w.allSupertypes);
   return w.isSubtypeOf(kTypeFieldValidator);
 }
 

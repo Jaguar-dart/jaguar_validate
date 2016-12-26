@@ -23,7 +23,13 @@ class Writer {
   }
 
   void _writeFields() {
+    Map<String, bool> written = {};
     for (FieldValidatorInfo item in info.validators) {
+      if(written[item.field]) {
+        continue;
+      }
+
+      written[item.field] = true;
       _w.writeln('${item.type} get ${item.field};');
       _w.writeln();
     }

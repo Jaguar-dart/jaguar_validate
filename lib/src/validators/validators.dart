@@ -3,10 +3,12 @@ library jaguar_validate.src.validators;
 import 'dart:async';
 import 'package:jaguar_validate/src/core/core.dart';
 
+part 'does_not_have_consecuitive_repeated_character.dart';
 part 'has_len.dart';
 part 'has_len_greater_than.dart';
 part 'has_len_in_range.dart';
 part 'has_len_less_than.dart';
+part 'has_special_character.dart';
 part 'is_alpha.dart';
 part 'is_alphanumeric.dart';
 part 'is_email.dart';

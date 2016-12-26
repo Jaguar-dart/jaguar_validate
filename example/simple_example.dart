@@ -9,7 +9,7 @@ import 'package:jaguar_validate/jaguar_validate.dart';
 part 'simple_example.g.dart';
 
 @GenValidator()
-class Author extends _Author {
+class Author extends _AuthorValidator {
   @HasLenInRange(1, 10)
   String name;
 
@@ -23,7 +23,7 @@ class Author extends _Author {
 }
 
 @GenValidator()
-class Book extends _Book {
+class Book extends _BookValidator {
   Book.make(this.name, this.author, this.abstract, this.pages, this.price);
 
   @HasLenInRange(1, 25)

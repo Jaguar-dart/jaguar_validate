@@ -12,7 +12,7 @@ class Writer {
   }
 
   void _generate() {
-    _w.writeln('abstract class _${info.name} implements Validatable {');
+    _w.writeln('abstract class _${info.name}Validator implements Validatable {');
     _w.writeln();
 
     _writeFields();

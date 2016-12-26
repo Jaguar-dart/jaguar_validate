@@ -7,7 +7,7 @@ part of jaguar_validate.example.simple;
 // Target: class Author
 // **************************************************************************
 
-abstract class _Author implements Validatable {
+abstract class _AuthorValidator implements Validatable {
   String get name;
 
   String get email;
@@ -33,7 +33,7 @@ abstract class _Author implements Validatable {
 // Target: class Book
 // **************************************************************************
 
-abstract class _Book implements Validatable {
+abstract class _BookValidator implements Validatable {
   String get name;
 
   Author get author;

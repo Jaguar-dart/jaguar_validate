@@ -5,7 +5,7 @@ RegExp _containsAlpha = new RegExp(r'[a-zA-Z]');
 class HasAlpha implements FieldValidator<String> {
   final bool whenNotNull;
 
-  HasAlpha HasNumber({this.whenNotNull: false});
+  const HasAlpha({this.whenNotNull: false});
 
   Future<PropertyValidationErrors> validate(String field, String param) async {
     if (param == null) {

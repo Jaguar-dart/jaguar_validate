@@ -6,24 +6,25 @@ class ValidateValidatable implements FieldValidator<Validatable> {
   const ValidateValidatable({this.whenNotNull: false});
 
   Future<ValidationErrors> validate(String field, Validatable param) async {
-    ObjectValidationErrors errors = new ObjectValidationErrors(field);
-
     if (param == null) {
       if (whenNotNull) {
-        return errors;
+        return new ObjectValidationErrors(field);
       } else {
-        errors.addPErr('this', new ValidationError('$field cannot be null!'));
-        return errors;
+        PropertyValidationErrors err = new PropertyValidationErrors(field);
+        err.add(new ValidationError('$field cannot be null!'));
+        return err;
       }
     }
 
     try {
       await param.validate();
-    } on ObjectValidationErrors catch (e) {
-      errors = e;
-      errors.field = field;
+    } on ValidationErrors catch (e) {
+      if (e is ObjectValidationErrors) {
+        e.field = field;
+      }
+      return e;
     }
 
-    return errors;
+    return new ObjectValidationErrors(field);
   }
 }

@@ -30,9 +30,9 @@ class ObjectValidator {
 
       if (err.hasErrors) {
         if (err is ObjectValidationErrors) {
-          ret.mergeOErr(err);
+          ret.includeObjectErrors(err);
         } else if (err is PropertyValidationErrors) {
-          ret.mergePErr(err);
+          ret.addPropertyError(err);
         }
       }
     }

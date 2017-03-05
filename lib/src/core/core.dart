@@ -5,11 +5,13 @@ library jaguar_validate.src.core;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:collection';
 
 part 'object_errors.dart';
 part 'object_validator.dart';
 part 'property_errors.dart';
 
+/// Annotation to request generation of validator
 class GenValidator {
   const GenValidator();
 }
@@ -22,6 +24,12 @@ class ValidationError {
   String toString() => msg;
 }
 
+abstract class ValidationErrors {
+  bool get hasErrors;
+
+  List<PropertyValidationErrors> get properties;
+}
+
 class ValidationBug {
   final String msg;
 
@@ -30,14 +38,8 @@ class ValidationBug {
   String toString() => msg;
 }
 
-abstract class ValidationErrors {
-  String get field;
-
-  bool get hasErrors;
-}
-
 abstract class FieldValidator<FieldType> {
-  Future<PropertyValidationErrors> validate(String field, FieldType param);
+  Future<ValidationErrors> validate(String field, FieldType param);
 }
 
 class ValidatableField<FieldType> {

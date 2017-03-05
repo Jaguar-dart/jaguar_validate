@@ -2,6 +2,12 @@
 
 A simple, source generated Validator framework
 
+# Features
+
+1. Both reflection and source generation are supported
+2. Annotation based validators
+3. Supports validation of nested objects
+
 ## Usage
 
 A simple usage example:
@@ -58,7 +64,6 @@ main() async {
     Book book = new Book.make('Fantastic beasts', author, abstract, 100, 100);
     await book.validate();
   } on ValidationErrors catch (e) {
-    print('here');
     print(e);
   }
 }

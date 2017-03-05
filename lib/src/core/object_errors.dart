@@ -3,13 +3,13 @@ part of jaguar_validate.src.core;
 class ObjectValidationErrors implements ValidationErrors {
   String _field;
 
-  final Map<String, ValidationErrors> _errors = {};
+  final Map<String, PropertyValidationErrors> _errors = {};
 
   ObjectValidationErrors(String field) {
     this.field = field;
   }
 
-  Map<String, ValidationErrors> get errors => _errors;
+  List<PropertyValidationErrors> get properties => _errors.values;
 
   set field(String field) => _field = field;
 
@@ -17,55 +17,45 @@ class ObjectValidationErrors implements ValidationErrors {
 
   bool get hasErrors => _errors.length != 0;
 
-  ObjectValidationErrors addPErr(String field, ValidationError error) {
-    ValidationErrors errorsList = _errors[field];
+  /// Adds error [error] to the field [field]
+  ObjectValidationErrors addError(String field, ValidationError error) {
+    PropertyValidationErrors errorsList = _errors[field];
 
     if (errorsList == null) {
       errorsList = new PropertyValidationErrors(field);
       _errors[field] = errorsList;
-    } else if (errorsList is! PropertyValidationErrors) {
-      throw new ValidationBug('Not a property error container!');
     }
 
-    (errorsList as PropertyValidationErrors).add(error);
+    errorsList.add(error);
 
     return this;
   }
 
-  ObjectValidationErrors mergePErr(PropertyValidationErrors err) {
-    err._errors.forEach((ValidationError v) => addPErr(err.field, v));
+  ObjectValidationErrors addPropertyError(PropertyValidationErrors err) {
+    PropertyValidationErrors errorsList = _errors[err.field];
 
-    return this;
-  }
-
-  ObjectValidationErrors addOErr(ObjectValidationErrors error) {
-    if (!error.hasErrors) {
-      return this;
-    }
-
-    ValidationErrors err = _errors[error.field];
-
-    if (err == null) {
-      _errors[error.field] = error;
-    } else if (err is ObjectValidationErrors) {
-      err.mergeOErr(error);
+    if (errorsList == null) {
+      _errors[err.field] = err;
     } else {
-      throw new ValidationBug('Not a Object error container!');
+      errorsList.addAll(err.errors);
     }
 
     return this;
   }
 
-  ObjectValidationErrors mergeOErr(ObjectValidationErrors error) {
-    for (String field in error._errors.keys) {
-      ValidationErrors err = error._errors[field];
-
-      if (err is PropertyValidationErrors) {
-        mergePErr(err);
-      } else if (err is ObjectValidationErrors) {
-        addOErr(err);
-      } else {
-        throw new ValidationBug('Unknown error container!');
+  ObjectValidationErrors includeObjectErrors(ObjectValidationErrors error) {
+    if (error.field is String && error.field.length != 0) {
+      for (final String field in error._errors.keys) {
+        final PropertyValidationErrors oldErr = error._errors[field];
+        final PropertyValidationErrors newErr =
+            new PropertyValidationErrors(error.field + '.' + field);
+        newErr.addAll(oldErr.errors);
+        addPropertyError(newErr);
+      }
+    } else {
+      for (final field in error._errors.keys) {
+        PropertyValidationErrors err = error._errors[field];
+        addPropertyError(err);
       }
     }
 

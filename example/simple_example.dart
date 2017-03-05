@@ -48,11 +48,10 @@ main() async {
     Whatever is abstract. Whatever maybe. Whatever could be an abstract.
     Scientific papers are usually dumb page fillers.
     """;
-    Author author = new Author.make('Mark', 'mark@books.com', 25);
-    Book book = new Book.make('Fantastic beasts', author, abstract, 100, 100);
+    Author author = new Author.make('Mark', 'mark@books.com', 35);
+    Book book = new Book.make('Fantastic beasts', author, abstract, 100, 250);
     await book.validate();
   } on ValidationErrors catch (e) {
-    print('here');
     print(e);
   }
 }

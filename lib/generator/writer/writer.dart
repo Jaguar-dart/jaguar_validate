@@ -12,7 +12,8 @@ class Writer {
   }
 
   void _generate() {
-    _w.writeln('abstract class _${info.name}Validator implements Validatable {');
+    _w.writeln(
+        'abstract class _${info.name}Validator implements Validatable {');
     _w.writeln();
 
     _writeFields();
@@ -25,7 +26,7 @@ class Writer {
   void _writeFields() {
     Map<String, bool> written = {};
     for (FieldValidatorInfo item in info.validators) {
-      if(written[item.field]) {
+      if (written[item.field]) {
         continue;
       }
 

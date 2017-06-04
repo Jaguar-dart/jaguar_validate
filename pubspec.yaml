@@ -1,6 +1,6 @@
 name: jaguar_validate
 description: A simple, source generated Validator framework
-version: 0.0.9
+version: 0.0.10
 authors:
 - Ravi Teja Gudapati <tejainece@gmail.com>
 - Kevin Segaud <segaud.kevin@gmail.com>
@@ -11,7 +11,7 @@ environment:
 
 dependencies:
   source_gen: "^0.5.1"
-  build: ">=0.4.1 <0.5.0"
+  build_runner: ">=0.3.4 <0.4.0"
   yaml: ">=2.1.10 <3.0.0"
   intl: ">=0.14.0 <0.15.0"
   source_gen_help: '>=0.0.4 <0.1.0'

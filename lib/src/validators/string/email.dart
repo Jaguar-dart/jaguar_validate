@@ -130,7 +130,7 @@ class HasASpecialChar implements FieldValidator<String> {
     return null;
   }
 
-  static RegExp regex = new RegExp(r'[^A-Za-z0-9]');
+  static RegExp regex = new RegExp(r'[^A-Za-z0-9 ]');
 }
 
 class IsAlpha implements FieldValidator<String> {
@@ -305,7 +305,7 @@ class DoesNotHaveConsecutiveRepeatedChars implements FieldValidator<String> {
       }
     }
 
-    if (!regex.hasMatch(param.toLowerCase())) {
+    if (regex.hasMatch(param.toLowerCase())) {
       return 'Should not have same character repeating consecutively more than ${allowedRepeats} times!';
     }
 

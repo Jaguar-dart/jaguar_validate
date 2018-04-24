@@ -10,7 +10,6 @@ class Author {
 
   String email;
 
-  @IsInRange(20, 30)
   int age;
 
   Author.make(this.name, this.email, this.age);
@@ -35,27 +34,6 @@ class Author {
     return errors;
   }
 }
-
-/*
-class Book extends _BookValidator {
-  Book.make(this.name, this.author, this.abstract, this.pages, this.price);
-
-  @HasLenInRange(1, 25)
-  String name;
-
-  @ValidateValidatable()
-  Author author;
-
-  @HasLenInRange(15, 1000)
-  String abstract;
-
-  @IsGreaterThan(0)
-  int pages;
-
-  @IsInRange(1, 200)
-  int price;
-}
-*/
 
 main() {
   Author author = new Author.make('Mark', 'mark@books.com', 28);

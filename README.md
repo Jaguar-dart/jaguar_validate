@@ -16,7 +16,6 @@ class Author {
 
   String email;
 
-  @IsInRange(20, 30)
   int age;
 
   Author.make(this.name, this.email, this.age);

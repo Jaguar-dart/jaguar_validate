@@ -3,6 +3,7 @@
 
 library jaguar_validate.example.simple;
 
+import 'dart:convert';
 import 'package:jaguar_validate/jaguar_validate.dart';
 
 class Author {
@@ -27,10 +28,30 @@ class Author {
         .isNotEmpty(trim: true)
         .isEmail()
         .setErrors(email, 'email', errors);
-    Validate.int
+    Validate.int.isNotNull().isInRange(20, 30).setErrors(age, 'age', errors);
+    return errors;
+  }
+}
+
+class Book {
+  String name;
+
+  Author author;
+
+  List<Author> authors;
+
+  Book(this.name, this.author, this.authors);
+
+  ObjectErrors validate() {
+    ObjectErrors errors = new ObjectErrors();
+    Validate.string
         .isNotNull()
-        .isInRange(20, 30)
-        .setErrors(age, 'age', errors);
+        .isNotEmpty(trim: true)
+        .startsWithAlpha()
+        .hasLengthLessThan(10)
+        .setErrors(name, 'name', errors);
+    errors.add('author', author.validate());
+    errors.add('authors', {'0': authors.map((a) => a.validate()).toList()});
     return errors;
   }
 }
@@ -65,13 +86,7 @@ main() {
   //=> {name: [should start with an alphabet!], email: [is not an email!], age: [should be in range [20, 30]!]}
   //=> true
 
-  /*
-    String abstract = """
-    Whatever is abstract. Whatever maybe. Whatever could be an abstract.
-    Scientific papers are usually dumb page fillers.
-    """;
-    Author author = new Author.make('Mark', 'mark@books.com', 35);
-    Book book = new Book.make('Fantastic beasts', author, abstract, 100, 250);
-    book.validate();
-  */
+  Book book = new Book('Fantastic beasts', author, [author, author]);
+  e = book.validate();
+  print(json.encode(e.toJson()));
 }

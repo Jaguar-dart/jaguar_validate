@@ -2,7 +2,6 @@ library jaguar_validate.src.validators;
 
 import 'dart:async';
 
-import 'common/common.dart';
 import 'num/num.dart';
 import 'string/string.dart';
 

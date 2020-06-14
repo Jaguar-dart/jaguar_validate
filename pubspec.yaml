@@ -1,13 +1,13 @@
 name: jaguar_validate
 description: A super simple fluent Validator framework for Dart
-version: 1.0.1
+version: 2.0.0
 authors:
 - Ravi Teja Gudapati <tejainece@gmail.com>
 - Kevin Segaud <segaud.kevin@gmail.com>
 homepage: http://jaguar-dart.github.io
 
 environment:
-  sdk: ">=2.0.0 <3.0.0"
+  sdk: ">=2.4.0 <3.0.0"
 
 # dependencies:
 

@@ -3,10 +3,9 @@
 
 library jaguar_validate.example.simple;
 
-import 'dart:convert';
 import 'package:jaguar_validate/jaguar_validate.dart';
 
-class Author {
+class Author implements Validatable {
   String name;
 
   String email;
@@ -15,25 +14,18 @@ class Author {
 
   Author.make(this.name, this.email, this.age);
 
-  ObjectErrors validate() {
-    ObjectErrors errors = new ObjectErrors();
-    Validate.string
-        .isNotNull()
-        .isNotEmpty(trim: true)
-        .startsWithAlpha()
-        .hasLengthLessThan(10)
-        .setErrors(name, 'name', errors);
-    Validate.string
-        .isNotNull()
-        .isNotEmpty(trim: true)
-        .isEmail()
-        .setErrors(email, 'email', errors);
-    Validate.int.isNotNull().isInRange(20, 30).setErrors(age, 'age', errors);
+  ValidationErrors validate() {
+    final errors = ValidationErrors();
+    errors['name'] = validateField(
+        name, [isNotNull, isNotEmpty(), isAlphaNumeric, hasMaxLength(10)]);
+    errors['email'] =
+        validateField(email, [isNotNull, isNotEmpty(), isEmail()]);
+    errors['age'] = validateField(age, [isNotNull]);
     return errors;
   }
 }
 
-class Book {
+class Book implements Validatable {
   String name;
 
   Author author;
@@ -42,51 +34,44 @@ class Book {
 
   Book(this.name, this.author, this.authors);
 
-  ObjectErrors validate() {
-    ObjectErrors errors = new ObjectErrors();
-    Validate.string
-        .isNotNull()
-        .isNotEmpty(trim: true)
-        .startsWithAlpha()
-        .hasLengthLessThan(10)
-        .setErrors(name, 'name', errors);
-    errors.add('author', author.validate());
-    errors.add('authors', {'0': authors.map((a) => a.validate()).toList()});
+  ValidationErrors validate() {
+    final errors = ValidationErrors();
+    errors['name'] =
+        validateField(name, [isNotNull, isNotEmpty(), hasMaxLength(10)]);
+    errors['author'] = author.validate();
+    errors['authors.@'] = validateField(authors, [isNotNull]);
+    if(authors != null) {
+      for(int i = 0; i < authors.length; i++) {
+        errors['authors.$i'] = authors[i].validate();
+      }
+    }
     return errors;
   }
 }
 
 main() {
-  Author author = new Author.make('Mark', 'mark@books.com', 28);
+  Author author = Author.make('Mark', 'mark@books.com', 28);
 
-  ObjectErrors e = author.validate();
+  ValidationErrors e = author.validate();
   print(e.toJson());
-  print(e.hasErrors);
   //=> {}
-  //=> false
 
-  author.age = 35;
+  author.age = null;
   e = author.validate();
   print(e.toJson());
-  print(e.hasErrors);
-  //=> {age: [should be in range [20, 30]!]}
-  //=> true
+  //=> {"age":["should not be null"]}
 
-  author.name = '5Mark';
+  author.name = ' Mark';
   e = author.validate();
   print(e.toJson());
-  print(e.hasErrors);
-  //=> {name: [should start with an alphabet!], age: [should be in range [20, 30]!]}
-  //=> true
+  //=> {"name":["should contain only alphabets and numbers"],"age":["should not be null"]}
 
   author.email = 'tejainece@';
   e = author.validate();
   print(e.toJson());
-  print(e.hasErrors);
-  //=> {name: [should start with an alphabet!], email: [is not an email!], age: [should be in range [20, 30]!]}
-  //=> true
+  //=> {"name":["should contain only alphabets and numbers"],"email":["not a valid email"],"age":["should not be null"]}
 
-  Book book = new Book('Fantastic beasts', author, [author, author]);
+  Book book = Book('Fantastic beasts', author, [author, author]);
   e = book.validate();
-  print(json.encode(e.toJson()));
+  print(e.toJson());
 }

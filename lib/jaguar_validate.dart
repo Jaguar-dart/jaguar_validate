@@ -4,4 +4,5 @@
 /// Contains a fuck ton of validator classes
 library jaguar_validate;
 
+export 'src/validation_errors.dart';
 export 'src/validators/validators.dart';

@@ -21,7 +21,7 @@ class Author {
   Author.make(this.name, this.email, this.age);
 
   ObjectErrors validate() {
-    ObjectErrors errors = new ObjectErrors();
+    ObjectErrors errors = ObjectErrors();
     Validate.string
         .isNotNull()
         .isNotEmpty(trim: true)
@@ -42,7 +42,7 @@ class Author {
 }
 
 main() {
-  Author author = new Author.make('Mark', 'mark@books.com', 28);
+  Author author = Author.make('Mark', 'mark@books.com', 28);
 
   ObjectErrors e = author.validate();
   print(e.toJson());

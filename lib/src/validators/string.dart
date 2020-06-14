@@ -134,10 +134,12 @@ Validator<String> doesNotHaveConsecutiveRepeatedChars(
     {int allowedRepeats = 3}) {
   final regexp = RegExp(r'(.)\1{' + (allowedRepeats + 1).toString() + r',}');
   return (String value) {
-    if(value == null) return null;
+    if (value == null) return null;
 
     if (regexp.hasMatch(value)) {
-      return ['should not have same character repeating consecutively more than ${allowedRepeats} times'];
+      return [
+        'should not have same character repeating consecutively more than ${allowedRepeats} times'
+      ];
     }
 
     return null;
@@ -145,9 +147,9 @@ Validator<String> doesNotHaveConsecutiveRepeatedChars(
 }
 
 Validator<String> matchesRegExp(RegExp regexp, {String message}) {
-  if(message == null) message = 'should match pattern "${regexp.pattern}"';
+  if (message == null) message = 'should match pattern "${regexp.pattern}"';
   return (String value) {
-    if(value == null) return null;
+    if (value == null) return null;
 
     if (!regexp.hasMatch(value)) {
       return [message];
@@ -155,3 +157,9 @@ Validator<String> matchesRegExp(RegExp regexp, {String message}) {
     return null;
   };
 }
+
+final _integerRegexp = RegExp(r'^(?:-?(?:0|[1-9][0-9]*))$');
+final _floatRegexp =
+    RegExp(r'^(?:-?(?:[0-9]+))?(?:\.[0-9]*)?(?:[eE][\+\-]?(?:[0-9]+))?$');
+final _hexadecimalRegexp = RegExp(r'^[0-9a-fA-F]+$');
+final _hexcolorRegexp = RegExp(r'^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');

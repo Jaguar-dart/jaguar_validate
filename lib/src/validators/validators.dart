@@ -5,9 +5,9 @@ import 'package:jaguar_validate/jaguar_validate.dart';
 export 'common.dart';
 export 'string.dart';
 
-typedef Validator<T> = List Function(T value);
+typedef ValidationRule<T> = List Function(T value);
 
-List validateField<T>(T value, List<Validator<T>> validators) {
+List validateValue<T>(T value, List<ValidationRule<T>> validators) {
   final ret = [];
 
   for (final v in validators) {
@@ -23,5 +23,5 @@ List validateField<T>(T value, List<Validator<T>> validators) {
 }
 
 abstract class Validatable {
-  ValidationErrors validate();
+  ObjectErrors validate();
 }

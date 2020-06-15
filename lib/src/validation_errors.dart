@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:jaguar_validate/jaguar_validate.dart';
 
-class ValidationErrors {
+class ObjectErrors {
   final _errors = <String, dynamic>{};
 
   void addError(
@@ -12,7 +12,7 @@ class ValidationErrors {
       // Do nothing
     } else if (errors is Map<String, dynamic>) {
       // Do nothing
-    } else if(errors is ValidationErrors) {
+    } else if (errors is ObjectErrors) {
       errors = errors.asMap;
     } else if (errors == null) {
       return;
@@ -107,7 +107,7 @@ class ValidationErrors {
       // Do nothing
     } else if (errors is Map<String, dynamic>) {
       // Do nothing
-    } else if(errors is ValidationErrors) {
+    } else if (errors is ObjectErrors) {
       errors = errors.asMap;
     } else if (errors == null) {
       // TODO cleanup tree
@@ -179,7 +179,11 @@ class ValidationErrors {
 
   static cloneErrorValue(/* Map<String, dynamic> | Iterable<String> */ errors) {
     if (errors is Iterable) {
-      return errors.toList();
+      return errors
+          .map((e) => e is Map
+              ? ValidationError.fromMap(e)
+              : (e is ValidationError ? e.clone() : e))
+          .toList();
     } else if (errors is Map) {
       final inputMap = errors.cast<String, dynamic>();
 
@@ -197,4 +201,37 @@ class ValidationErrors {
           '${errors.runtimeType} not supported. must be Map or List');
     }
   }
+}
+
+class ValidationError {
+  int code;
+
+  Map<String, dynamic> params;
+
+  String message;
+
+  ValidationError({this.code, this.params, this.message});
+
+  factory ValidationError.fromMap(Map error) => ValidationError(
+      code: error['code'],
+      params: (error['params'] as Map)?.cast<String, dynamic>(),
+      message: error['message']);
+
+  ValidationError clone() => ValidationError(
+      code: code,
+      params: params != null ? Map.from(params) : null,
+      message: message);
+
+  Map<String, dynamic> asMap() {
+    return {
+      'code': code,
+      'params': params,
+      'message': message,
+    };
+  }
+
+  String toJson() => json.encode(asMap());
+
+  String toString() =>
+      'ValidationError(code: $code, params: $params, message: $message)';
 }

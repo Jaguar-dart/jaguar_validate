@@ -14,13 +14,13 @@ class Author implements Validatable {
 
   Author.make(this.name, this.email, this.age);
 
-  ValidationErrors validate() {
-    final errors = ValidationErrors();
-    errors['name'] = validateField(
+  ObjectErrors validate() {
+    final errors = ObjectErrors();
+    errors['name'] = validateValue(
         name, [isNotNull(), isNotEmpty(), isAlphaNumeric(), hasMaxLength(10)]);
     errors['email'] =
-        validateField(email, [isNotNull(), isNotEmpty(), isEmailAddress()]);
-    errors['age'] = validateField(age, [isNotNull()]);
+        validateValue(email, [isNotNull(), isNotEmpty(), isEmailAddress()]);
+    errors['age'] = validateValue(age, [isNotNull()]);
     return errors;
   }
 }
@@ -34,12 +34,12 @@ class Book implements Validatable {
 
   Book(this.name, this.author, this.authors);
 
-  ValidationErrors validate() {
-    final errors = ValidationErrors();
+  ObjectErrors validate() {
+    final errors = ObjectErrors();
     errors['name'] =
-        validateField(name, [isNotNull(), isNotEmpty(), hasMaxLength(10)]);
+        validateValue(name, [isNotNull(), isNotEmpty(), hasMaxLength(10)]);
     errors['author'] = author.validate();
-    errors['authors.@'] = validateField(authors, [isNotNull()]);
+    errors['authors.@'] = validateValue(authors, [isNotNull()]);
     if(authors != null) {
       for(int i = 0; i < authors.length; i++) {
         errors['authors.$i'] = authors[i].validate();
@@ -52,7 +52,7 @@ class Book implements Validatable {
 main() {
   Author author = Author.make('Mark', 'mark@books.com', 28);
 
-  ValidationErrors e = author.validate();
+  ObjectErrors e = author.validate();
   print(e.toJson());
   //=> {}
 

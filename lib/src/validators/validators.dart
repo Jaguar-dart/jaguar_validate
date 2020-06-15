@@ -5,10 +5,10 @@ import 'package:jaguar_validate/jaguar_validate.dart';
 export 'common.dart';
 export 'string.dart';
 
-typedef Validator<T> = List<String> Function(T value);
+typedef Validator<T> = List Function(T value);
 
-List<String> validateField<T>(T value, List<Validator<T>> validators) {
-  final ret = <String>[];
+List validateField<T>(T value, List<Validator<T>> validators) {
+  final ret = [];
 
   for (final v in validators) {
     final e = v(value);

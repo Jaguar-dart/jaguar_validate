@@ -56,7 +56,7 @@ class ValidationErrors {
     var destination = current[lastKey];
     if (destination == null) {
       if (errors is Iterable) {
-        destination = current[lastKey] = <String>[];
+        destination = current[lastKey] = [];
       } else {
         destination = current[lastKey] = <String, dynamic>{};
       }
@@ -179,7 +179,7 @@ class ValidationErrors {
 
   static cloneErrorValue(/* Map<String, dynamic> | Iterable<String> */ errors) {
     if (errors is Iterable) {
-      return errors.cast<String>().toList();
+      return errors.toList();
     } else if (errors is Map) {
       final inputMap = errors.cast<String, dynamic>();
 

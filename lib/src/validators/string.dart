@@ -66,7 +66,7 @@ Validator<String> hasLengthInRange(int min, int max) {
 
 final _anAlphabetRegexp = RegExp(r'[a-zA-Z]');
 
-List<String> hasAnAlphabet(String value) {
+List hasAnAlphabet(String value) {
   if (value == null) return null;
 
   if (!_anAlphabetRegexp.hasMatch(value)) {
@@ -77,7 +77,7 @@ List<String> hasAnAlphabet(String value) {
 
 final _aSpecialCharacterRegexp = RegExp(r'[^A-Za-z0-9 ]');
 
-List<String> hasASpecialChar(String value) {
+List hasASpecialChar(String value) {
   if (value == null) return null;
 
   if (!_aSpecialCharacterRegexp.hasMatch(value)) {
@@ -88,7 +88,7 @@ List<String> hasASpecialChar(String value) {
 
 final _isAlphaRegexp = RegExp(r'^[a-zA-Z]+$');
 
-List<String> isAlpha(String value) {
+List isAlpha(String value) {
   if (value == null) return null;
 
   if (!_isAlphaRegexp.hasMatch(value)) {
@@ -99,7 +99,7 @@ List<String> isAlpha(String value) {
 
 final _alphaNumericRegexp = RegExp(r'^[a-zA-Z0-9]+$');
 
-List<String> isAlphaNumeric(String value) {
+List isAlphaNumeric(String value) {
   if (value == null) return null;
 
   if (!_alphaNumericRegexp.hasMatch(value)) {
@@ -110,7 +110,7 @@ List<String> isAlphaNumeric(String value) {
 
 final _numericRegexp = RegExp(r'^[0-9]+$');
 
-List<String> isNumeric(String value) {
+List isNumeric(String value) {
   if (value == null) return null;
 
   if (!_numericRegexp.hasMatch(value)) {
@@ -121,7 +121,7 @@ List<String> isNumeric(String value) {
 
 final _aNumberRegexp = RegExp(r'[0-9]');
 
-List<String> hasANumber(String value) {
+List hasANumber(String value) {
   if (value == null) return null;
 
   if (!_aNumberRegexp.hasMatch(value)) {

@@ -1,6 +1,8 @@
 import 'package:jaguar_validate/jaguar_validate.dart';
 
-List isNotNull(dynamic value) {
-  if(value == null) return ['should not be null'];
-  return null;
+Validator<dynamic> isNotNull({err = 'should not be null'}) {
+  return (dynamic value) {
+    if (value == null) return [err];
+    return null;
+  };
 }

@@ -17,10 +17,10 @@ class Author implements Validatable {
   ValidationErrors validate() {
     final errors = ValidationErrors();
     errors['name'] = validateField(
-        name, [isNotNull, isNotEmpty(), isAlphaNumeric, hasMaxLength(10)]);
+        name, [isNotNull(), isNotEmpty(), isAlphaNumeric(), hasMaxLength(10)]);
     errors['email'] =
-        validateField(email, [isNotNull, isNotEmpty(), isEmail()]);
-    errors['age'] = validateField(age, [isNotNull]);
+        validateField(email, [isNotNull(), isNotEmpty(), isEmailAddress()]);
+    errors['age'] = validateField(age, [isNotNull()]);
     return errors;
   }
 }
@@ -37,9 +37,9 @@ class Book implements Validatable {
   ValidationErrors validate() {
     final errors = ValidationErrors();
     errors['name'] =
-        validateField(name, [isNotNull, isNotEmpty(), hasMaxLength(10)]);
+        validateField(name, [isNotNull(), isNotEmpty(), hasMaxLength(10)]);
     errors['author'] = author.validate();
-    errors['authors.@'] = validateField(authors, [isNotNull]);
+    errors['authors.@'] = validateField(authors, [isNotNull()]);
     if(authors != null) {
       for(int i = 0; i < authors.length; i++) {
         errors['authors.$i'] = authors[i].validate();

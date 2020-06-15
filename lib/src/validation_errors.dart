@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:jaguar_validate/jaguar_validate.dart';
-
 class ObjectErrors {
   final _errors = <String, dynamic>{};
 
@@ -177,7 +175,8 @@ class ObjectErrors {
     }
   }
 
-  static cloneErrorValue(/* Map<String, dynamic> | Iterable<String> */ errors) {
+  static dynamic cloneErrorValue(
+      /* Map<String, dynamic> | Iterable<String> */ errors) {
     if (errors is Iterable) {
       return errors
           .map((e) => e is Map
@@ -232,6 +231,7 @@ class ValidationError {
 
   String toJson() => json.encode(asMap());
 
+  @override
   String toString() =>
       'ValidationError(code: $code, params: $params, message: $message)';
 }

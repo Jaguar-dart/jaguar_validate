@@ -14,6 +14,7 @@ class Author implements Validatable {
 
   Author.make(this.name, this.email, this.age);
 
+  @override
   ObjectErrors validate() {
     final errors = ObjectErrors();
     errors['name'] = validateValue(
@@ -34,14 +35,15 @@ class Book implements Validatable {
 
   Book(this.name, this.author, this.authors);
 
+  @override
   ObjectErrors validate() {
     final errors = ObjectErrors();
     errors['name'] =
         validateValue(name, [isNotNull(), isNotEmpty(), hasMaxLength(10)]);
     errors['author'] = author.validate();
     errors['authors.@'] = validateValue(authors, [isNotNull()]);
-    if(authors != null) {
-      for(int i = 0; i < authors.length; i++) {
+    if (authors != null) {
+      for (int i = 0; i < authors.length; i++) {
         errors['authors.$i'] = authors[i].validate();
       }
     }
@@ -49,7 +51,7 @@ class Book implements Validatable {
   }
 }
 
-main() {
+void main() {
   Author author = Author.make('Mark', 'mark@books.com', 28);
 
   ObjectErrors e = author.validate();

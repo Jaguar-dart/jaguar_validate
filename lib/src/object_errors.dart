@@ -3,6 +3,8 @@ import 'dart:convert';
 class ObjectErrors {
   final _errors = <String, dynamic>{};
 
+  bool get hasErrors => _errors.isNotEmpty;
+
   void addError(
       /* String | Iterable<String> */ key,
       /* Map<String, dynamic> | Iterable<String> */ errors) {
@@ -18,19 +20,7 @@ class ObjectErrors {
       throw ArgumentError('${errors.runtimeType} is invalid error object');
     }
 
-    Iterable<String> iterable;
-    if (key is String) {
-      iterable = key.split('.');
-    } else if (key is Iterable) {
-      iterable = key.cast<String>();
-    } else {
-      throw Exception('key must be String or Iterable');
-    }
-
-    if (iterable.isEmpty) {
-      throw ArgumentError(
-          'there should at least be one path segment in the key');
-    }
+    Iterable<String> iterable = splitKey(key);
 
     Iterator<String> iterator = iterable.take(iterable.length - 1).iterator;
     String lastKey = iterable.last;
@@ -64,19 +54,7 @@ class ObjectErrors {
   }
 
   dynamic operator [](/* String | Iterable<String> */ key) {
-    Iterable<String> iterable;
-    if (key is String) {
-      iterable = key.split('.');
-    } else if (key is Iterable) {
-      iterable = key.cast<String>();
-    } else {
-      throw Exception('key must be String or Iterable');
-    }
-
-    if (iterable.isEmpty) {
-      throw ArgumentError(
-          'there should at least be one path segment in the key');
-    }
+    Iterable<String> iterable = splitKey(key);
 
     Iterator<String> iterator = iterable.take(iterable.length - 1).iterator;
     String lastKey = iterable.last;
@@ -108,25 +86,12 @@ class ObjectErrors {
     } else if (errors is ObjectErrors) {
       errors = errors.asMap;
     } else if (errors == null) {
-      // TODO cleanup tree
-      return;
+      // Do nothing
     } else {
       throw ArgumentError('${errors.runtimeType} is invalid error object');
     }
 
-    Iterable<String> iterable;
-    if (key is String) {
-      iterable = key.split('.');
-    } else if (key is Iterable) {
-      iterable = key.cast<String>();
-    } else {
-      throw Exception('key must be String or Iterable');
-    }
-
-    if (iterable.isEmpty) {
-      throw ArgumentError(
-          'there should atleast be one path segment in the key');
-    }
+    final iterable = splitKey(key);
 
     Iterator<String> iterator = iterable.take(iterable.length - 1).iterator;
     String lastKey = iterable.last;
@@ -147,10 +112,49 @@ class ObjectErrors {
       }
     }
 
-    current[lastKey] = errors;
+    if (errors != null) {
+      current[lastKey] = errors;
+    } else {
+      current.remove(lastKey);
+      cleanupErrors();
+    }
   }
 
-  Map<String, dynamic> get asMap => cloneErrorValue(_errors);
+  void _cleanupMap(Map map) {
+    if (map == null) return;
+
+    final remove = <String>[];
+
+    for (final key in map.keys) {
+      var e = map[key];
+      if (e == null) {
+        remove.add(key);
+      } else if (e is Iterable) {
+        if (e.isEmpty) {
+          remove.add(key);
+        }
+      } else if (e is Map) {
+        _cleanupMap(e);
+        if (e.isEmpty) {
+          remove.add(key);
+        }
+      }
+    }
+
+    for (final key in remove) {
+      map.remove(key);
+    }
+  }
+
+  void cleanupErrors() {
+    _cleanupMap(_errors);
+  }
+
+  Map<String, dynamic> get asMap {
+    if (!hasErrors) return null;
+
+    return cloneErrorValue(_errors);
+  }
 
   String toJson() => json.encode(asMap);
 
@@ -199,6 +203,28 @@ class ObjectErrors {
       throw UnsupportedError(
           '${errors.runtimeType} not supported. must be Map or List');
     }
+  }
+
+  static Iterable<String> splitKey(/* String | Iterable<String> */ key) {
+    Iterable<String> iterable;
+    if (key is String) {
+      iterable = key.split('.');
+    } else if (key is Iterable) {
+      iterable = key.cast<String>().expand((element) => element.split(('.')));
+    } else {
+      throw Exception('key must be String or Iterable');
+    }
+
+    if (iterable.isEmpty) {
+      throw ArgumentError(
+          'there should atleast be one path segment in the key');
+    }
+
+    if (iterable.any((element) => element.isEmpty)) {
+      throw ArgumentError('a key element cannot be empty');
+    }
+
+    return iterable;
   }
 }
 

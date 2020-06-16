@@ -5,6 +5,7 @@
 + `ObjectErrors.splitKey` static method to split key into segments
 + ObjectError methods now recursively split key into segments
 + `ObjectErrors.hasErrors` method to check if there are any errors
++ `ObjectErrors.clear` to clear all errors
 
 ### Breaking changes
 

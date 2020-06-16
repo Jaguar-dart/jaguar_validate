@@ -120,6 +120,10 @@ class ObjectErrors {
     }
   }
 
+  void clear() {
+    _errors.clear();
+  }
+
   void _cleanupMap(Map map) {
     if (map == null) return;
 
@@ -157,6 +161,8 @@ class ObjectErrors {
   }
 
   String toJson() => json.encode(asMap);
+
+  // TODO implement flat representation
 
   static dynamic _mergeErrors(destination, source) {
     source = cloneErrorValue(source);

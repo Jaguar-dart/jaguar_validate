@@ -200,8 +200,10 @@ ValidationRule<String> matchesRegExp(RegExp regexp,
   };
 }
 
+/*
 final _integerRegexp = RegExp(r'^(?:-?(?:0|[1-9][0-9]*))$');
 final _floatRegexp =
     RegExp(r'^(?:-?(?:[0-9]+))?(?:\.[0-9]*)?(?:[eE][\+\-]?(?:[0-9]+))?$');
 final _hexadecimalRegexp = RegExp(r'^[0-9a-fA-F]+$');
 final _hexcolorRegexp = RegExp(r'^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');
+*/

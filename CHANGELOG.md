@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.5
+
++ Integer validation functions `isLessThan`, `isGreaterThan` and `isInRange`
+
 ## 2.0.1
 
 + `ObjectErrors.splitKey` static method to split key into segments

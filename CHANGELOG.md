@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.6
+
++ Integer validation rules `isNeative`, `isPositive`, `isEven` and `isOdd`
+
 ## 2.0.5
 
 + Integer validation functions `isLessThan`, `isGreaterThan` and `isInRange`

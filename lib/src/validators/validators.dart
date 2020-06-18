@@ -3,6 +3,7 @@ library jaguar_validate.src.validators;
 import 'package:jaguar_validate/jaguar_validate.dart';
 
 export 'common.dart';
+export 'int.dart';
 export 'string.dart';
 
 typedef ValidationRule<T> = List Function(T value);

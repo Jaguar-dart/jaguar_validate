@@ -14,6 +14,9 @@ class ObjectErrors {
       // Do nothing
     } else if (errors is ObjectErrors) {
       errors = errors.asMap;
+      if (errors == null) {
+        return;
+      }
     } else if (errors == null) {
       return;
     } else {
@@ -160,7 +163,7 @@ class ObjectErrors {
     return cloneErrorValue(_errors);
   }
 
-  String toJson() => json.encode(asMap);
+  Map<String, dynamic> toJson() => asMap;
 
   // TODO implement flat representation
 
@@ -261,7 +264,7 @@ class ValidationError {
     };
   }
 
-  String toJson() => json.encode(asMap());
+  Map<String, dynamic> toJson() => asMap();
 
   @override
   String toString() =>

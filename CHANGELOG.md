@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.8
+
++ `toJson` returns Map
+
 ## 2.0.6
 
 + Integer validation rules `isNeative`, `isPositive`, `isEven` and `isOdd`
